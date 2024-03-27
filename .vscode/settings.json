@@ -1,0 +1,7 @@
+{
+	"atlascode.bitbucket.enabled": false,
+	"workbench.colorCustomizations": {
+		"titleBar.activeBackground": "#9488029d",
+		"titleBar.inactiveBackground": "#9488029d"
+	}
+}
