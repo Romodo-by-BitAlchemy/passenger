@@ -14,10 +14,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Romodo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 59, 17, 226)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Request a Trip'),
+      home: const MyHomePage(title: 'Romodo'),
     );
   }
 }
@@ -42,9 +43,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Define your pages here. These could be actual pages or just placeholders.
   final List<Widget> _pages = [
-    const Center(child: Text('Home Page')),
     const Center(child: Text('Menu Page')),
-    const TripRequestForm(),
+    const Center(child: Text('Home Page')),
+    Container(
+      child: BookTripPage(),
+    ),
     const Center(child: Text('Account Page')),
   ];
 
