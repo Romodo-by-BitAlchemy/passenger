@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     const Center(child: Text('Menu Page')),
     const Center(child: Text('Home Page')),
-    Container(
+    const Center(
       child: BookTripPage(),
     ),
     const Center(child: Text('Account Page')),
