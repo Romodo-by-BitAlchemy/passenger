@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:passenger/Pages/fpassword.dart';
-import 'package:passenger/Pages/login.dart';
-import 'package:passenger/Pages/logout.dart';
-import 'package:passenger/Pages/rpassword.dart';
+import 'package:passenger/pages/fpassword.dart';
+import 'package:passenger/pages/login.dart';
+import 'package:passenger/pages/logout.dart';
+import 'package:passenger/pages/rpassword.dart';
 
 void main() {
   runApp(const MyApp());
