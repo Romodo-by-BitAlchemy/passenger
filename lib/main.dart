@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:passenger/Pages/fpassword.dart';
 import 'package:passenger/Pages/login.dart';
+import 'package:passenger/Pages/logout.dart';
+import 'package:passenger/Pages/rpassword.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,11 +35,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(title: 'Flutter Demo Home Page'),
+      
       
   routes: {
     '/login': (context) => const LoginScreen(title: '',),
     '/forgot_password': (context) => ForgotPassword(),
+    '/resetPassword': (context) => const ResetPassword(token: ''),
+    '/dashboard': (context) => const MyHomePage(title: 'Dashboard'),
+    '/logout': (context) =>  Logout(),
     
   },
   initialRoute: '/login', // Set the initial route
