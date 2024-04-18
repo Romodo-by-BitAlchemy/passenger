@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passenger/Pages/fpassword.dart';
 import 'package:passenger/Pages/login.dart';
 
 void main() {
@@ -33,7 +34,16 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const LoginScreen(title: 'Flutter Demo Home Page'),
-    );
+      
+  routes: {
+    '/login': (context) => const LoginScreen(title: '',),
+    '/forgot_password': (context) => ForgotPassword(),
+    
+  },
+  initialRoute: '/login', // Set the initial route
+);
+
+    
   }
 }
 
