@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 
+//TODO: set the initial map camera to show the selected company location (i.e. trip start point)
+//TODO: display the line on the map from the company location to the selected destination
+
 // Google Maps API key
 const kGoogleApiKey = "AIzaSyCFMvP08hl6J9yIcJoPoCm7Tioqb2L3Kcw";
 
