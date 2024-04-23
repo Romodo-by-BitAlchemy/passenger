@@ -1,3 +1,5 @@
+import 'dart:ffi';
+import '../server_conn.dart' as server_conn;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -71,9 +73,17 @@ class BookTripPageState extends State<BookTripPage> {
             zoomControlsEnabled: false,
             fortyFiveDegreeImageryEnabled: true,
           ),
-        )
+        ),
+        ElevatedButton(
+          onPressed: _submitTripRequest,
+          child: const Text("Request Trip"),
+        ),
       ],
     );
+  }
+
+  void _submitTripRequest() {
+    server_conn.fetchServerData();
   }
 
   /// Callback when the Google Map is created.
