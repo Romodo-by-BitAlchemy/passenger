@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () {
                 // Implement Forgot Password functionality
-                Navigator.pushNamed(context, '/forgot_password');
+                Navigator.pushNamed(context, '/fpassword');
               },
               child: const Text(
                 'Forgot Password?',
