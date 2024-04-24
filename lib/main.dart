@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       
   routes: {
     '/login': (context) => const LoginScreen(title: '',),
-    '/forgot_password': (context) => ForgotPassword(),
+    '/fpassword': (context) => ForgotPassword(),
     '/resetPassword': (context) => const ResetPassword(token: ''),
     '/dashboard': (context) => const MyHomePage(title: 'Dashboard'),
     '/logout': (context) =>  Logout(),
