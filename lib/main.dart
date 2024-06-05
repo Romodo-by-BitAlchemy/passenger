@@ -3,7 +3,9 @@ import 'package:passenger/pages/fpassword.dart';
 import 'package:passenger/pages/login.dart';
 import 'package:passenger/pages/logout.dart';
 import 'package:passenger/pages/rpassword.dart';
-
+//import 'package:passenger/pages/signup.dart';
+import 'package:passenger/pages/updatep.dart';
+//import 'package:pass_log/components/bottom_nav_bar.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -39,10 +41,12 @@ class MyApp extends StatelessWidget {
       
   routes: {
     '/login': (context) => const LoginScreen(title: '',),
+    //'/signup': (context) => const SignUpScreen(),
     '/fpassword': (context) => ForgotPassword(),
     '/resetPassword': (context) => const ResetPassword(token: ''),
     '/dashboard': (context) => const MyHomePage(title: 'Dashboard'),
     '/logout': (context) =>  Logout(),
+    '/updatePassenger': (context) => const UpdatePassengerScreen(passengerId: ''),
     
   },
   initialRoute: '/login', // Set the initial route

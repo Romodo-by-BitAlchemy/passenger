@@ -11,47 +11,63 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
 
   void _handleSubmit() async {
     String email = _emailController.text;
 
-    // Sending a POST request to the server to initiate password reset
+    if (email.isEmpty) {
+      _showDialog('Error', 'Please enter your email address.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
     final response = await http.post(
       Uri.parse('http://localhost:3000/auth/forgotPassword'),
       body: json.encode({'email': email}),
       headers: {'Content-Type': 'application/json'},
     );
 
+    setState(() {
+      _isLoading = false;
+    });
+
     if (response.statusCode == 200) {
-      // Assuming the server sends a JSON response like { "status": true }
       Map<String, dynamic> data = json.decode(response.body);
       if (data['status']) {
-        // ignore: avoid_print
-        print('Email sent');
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Password Reset'),
-              content: const Text('Check your email for password reset link.'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop(); // Pop twice to go back to login screen
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        _showDialog('Password Reset', 'Check your email for password reset link.', popTwice: true);
+      } else {
+        _showDialog('Error', 'Something went wrong. Please try again.');
       }
     } else {
-      // ignore: avoid_print
-      print('Error: ${response.reasonPhrase}');
+      _showDialog('Error', 'Error: ${response.reasonPhrase}');
     }
+  }
+
+  void _showDialog(String title, String message, {bool popTwice = false}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (popTwice) {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -59,31 +75,103 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Forgot Password'),
+        backgroundColor: const Color(0xFF6C63FF),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Forgot Password',
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6C63FF), Color(0xFFB39DDB)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Card(
+              elevation: 10.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Center(
+                      child: Image.asset(
+                        'assets/logo.jpg',
+                        height: 150,
+                        width: 150,
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    const Center(
+                      child: Text(
+                        'Forgot Password',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF6C63FF),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    const Center(
+                      child: Text(
+                        'Password reset process',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: const Icon(Icons.email, color: Color(0xFF6C63FF)),
+                      ),
+                      style: const TextStyle(fontSize: 18.0),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 20.0),
+                    _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _handleSubmit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6C63FF),
+                                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                elevation: 5.0,
+                                shadowColor: const Color(0xFF6C63FF).withOpacity(0.5),
+                              ),
+                              child: const Text(
+                                'SUBMIT',
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: _handleSubmit,
-              child: const Text('SUBMIT'),
-            ),
-          ],
+          ),
         ),
       ),
     );
