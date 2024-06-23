@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:passenger/pages/fpassword.dart';
+import 'package:passenger/pages/getemail.dart';
 import 'package:passenger/pages/login.dart';
-import 'package:passenger/pages/logout.dart';
+//import 'package:pass_log/pages/logout.dart';
 import 'package:passenger/pages/rpassword.dart';
-//import 'package:passenger/pages/signup.dart';
+import 'package:passenger/pages/signup.dart';
 import 'package:passenger/pages/updatep.dart';
-//import 'package:pass_log/components/bottom_nav_bar.dart';
+import 'package:passenger/components/bottom_nav_bar.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -41,12 +43,15 @@ class MyApp extends StatelessWidget {
       
   routes: {
     '/login': (context) => const LoginScreen(title: '',),
-    //'/signup': (context) => const SignUpScreen(),
+    '/signup': (context) => const SignUpScreen(),
     '/fpassword': (context) => ForgotPassword(),
-    '/resetPassword': (context) => const ResetPassword(token: ''),
+    '/rpassword': (context) => const ResetPassword(token: ''),
     '/dashboard': (context) => const MyHomePage(title: 'Dashboard'),
-    '/logout': (context) =>  Logout(),
-    '/updatePassenger': (context) => const UpdatePassengerScreen(passengerId: ''),
+    //'/logout': (context) =>  Logout(),
+     '/updatePassenger': (context) => UpdatePassengerScreen(
+      passengerEmail: ModalRoute.of(context)!.settings.arguments as String,
+    ),
+     '/get_email': (context) => GetEmailScreen(),
     
   },
   initialRoute: '/login', // Set the initial route
@@ -55,6 +60,8 @@ class MyApp extends StatelessWidget {
     
   }
 }
+
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -76,6 +83,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _selectedIndex = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -86,6 +94,26 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/menu');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/home');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/romodo');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/account');
+        break;
+    }
   }
 
   @override
@@ -140,6 +168,10 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemSelected: _onItemTapped,
+      ),
     );
   }
 }

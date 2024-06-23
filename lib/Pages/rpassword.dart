@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:lottie/lottie.dart';
 
 class ResetPassword extends StatefulWidget {
   final String token;
@@ -98,14 +99,14 @@ class _ResetPasswordState extends State<ResetPassword> {
     }
 
     final response = await http.post(
-      Uri.parse('http://localhost:3000/auth/resetPassword/${widget.token}'),
+      Uri.parse('http://localhost:3000/api/v1/passenger/rpassword/${widget.token}'),
       body: json.encode({'password': password}),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data['status']) {
+      //Map<String, dynamic> data = json.decode(response.body);
+      //if (data['status']) {
         showDialog(
           // ignore: use_build_context_synchronously
           context: context,
@@ -126,7 +127,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           },
         );
       }
-    } else {
+    else {
       setState(() {
         _errorMessage = 'Error: ${response.reasonPhrase}';
         _isLoading = false;
@@ -163,13 +164,20 @@ class _ResetPasswordState extends State<ResetPassword> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Center(
+                    /*Center(
                       child: Image.asset(
                         'assets/logo.jpg',
                         height: 150,
                         width: 150,
                       ),
-                    ),
+                    ),*/
+                     Center(
+              child: Lottie.asset(
+                'assets/reset_password_animation.json', // Path to your Lottie animation asset
+                height: 300, // Adjust the height as needed
+                width: 300,  // Adjust the width as needed
+              ),
+            ),
                     const SizedBox(height: 20.0),
                     const Center(
                       child: Text(

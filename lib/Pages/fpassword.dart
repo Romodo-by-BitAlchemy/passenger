@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:lottie/lottie.dart';
 
 // ignore: use_key_in_widget_constructors
 class ForgotPassword extends StatefulWidget {
@@ -25,10 +26,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       _isLoading = true;
     });
 
+  try{
     final response = await http.post(
-      Uri.parse('http://localhost:3000/auth/forgotPassword'),
-      body: json.encode({'email': email}),
+      Uri.parse('http://localhost:3000/api/v1/passenger/fpassword'),
+      
       headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
     );
 
     setState(() {
@@ -36,15 +39,19 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     });
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data['status']) {
+      
         _showDialog('Password Reset', 'Check your email for password reset link.', popTwice: true);
-      } else {
+    } 
+      else {
         _showDialog('Error', 'Something went wrong. Please try again.');
-      }
-    } else {
-      _showDialog('Error', 'Error: ${response.reasonPhrase}');
     }
+    
+  }catch(error){
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog('Error', 'Something went wrong. Please try again.');
+  }
   }
 
   void _showDialog(String title, String message, {bool popTwice = false}) {
@@ -98,13 +105,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Center(
+                    /*Center(
                       child: Image.asset(
                         'assets/logo.jpg',
                         height: 150,
                         width: 150,
                       ),
-                    ),
+                    ),*/
+                    Center(
+              child: Lottie.asset(
+                'assets/forgot_password_animation.json', // Path to your Lottie animation asset
+                height: 300, // Adjust the height as needed
+                width: 300,  // Adjust the width as needed
+              ),
+            ),
                     const SizedBox(height: 20.0),
                     const Center(
                       child: Text(
@@ -119,7 +133,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     const SizedBox(height: 10.0),
                     const Center(
                       child: Text(
-                        'Password reset process',
+                        'Password reset option',
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.grey,

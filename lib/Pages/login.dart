@@ -1,4 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+//import 'network_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lottie/lottie.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required String title});
@@ -16,48 +23,109 @@ class _LoginScreenState extends State<LoginScreen> {
   String _errorMessage = "";
   String _passwordStrength = "";
 
-  void _handleSubmit() {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
+  
 
-    if (username.isNotEmpty && password.isNotEmpty && _passwordStrength == "Strong") {
-      setState(() {
-        _isLoading = true;
-      });
+ Future<void> _handleSubmit() async {
+  final username = _usernameController.text;
+  final password = _passwordController.text;
 
-      // Simulate a network call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
+  if (username.isEmpty || password.isEmpty) {
+    setState(() {
+      _errorMessage = "Please fill in both fields.";
+    });
+    return;
+  }
+
+  setState(() {
+    _isLoading = true;
+    _errorMessage = "";
+  });
+
+  try {
+    final response = await http.post(
+      Uri.parse("http://localhost:3000/api/v1/passenger/login"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'username': username,
+        'password': password,
+      }),
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response.statusCode == 200) {//204 kiwwama content ekak na eka 200 karala balana 
         // ignore: avoid_print
-        print("User logged in successfully");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Success"),
-              content: const Text("User logged in successfully"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
+        //print('response body: ${response.body}');
+
+        final responseData = jsonDecode(response.body);
+        if (kDebugMode) {
+          print(responseData);
+        }
+
+        
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        
+        await prefs.setString('token', responseData['token']);
+
+        await prefs.setString('passenger', jsonEncode(responseData['data']));
+       
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User logged in successfully')),
         );
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/dashboard');
         _usernameController.clear();
         _passwordController.clear();
-      });
-    } else {
+     
+    } else if (response.statusCode == 400) {
       setState(() {
-        _errorMessage = "Invalid username or password. Please try again.";
+        _errorMessage = 'User not registered. Please sign up.';
       });
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not registered. Please sign up.')),
+      );
+    } else if (response.statusCode == 401) {
+      setState(() {
+        _errorMessage = 'Invalid password.';
+      });
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid password.')),
+      );
+    } else if (response.statusCode == 403) {
+      setState(() {
+        _errorMessage = 'Your are deactivated by the admin. Please check your email for more information';
+      });
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Your are deactivated by the admin. Please check your email for more information')),
+      );
     }
+    else {
+      setState(() {
+        _errorMessage = 'An error occurred, please try again later.';
+      });
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred, please try again later.')),
+      );
+    }
+  } catch (error) {
+    setState(() {
+      _isLoading = false;
+      _errorMessage = "Failed to login. Please try again.";
+    });
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to login. Please try again.')),
+    );
   }
+}
+
 
   String _validatePassword(String password) {
     if (password.isEmpty) {
@@ -143,14 +211,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
+                    /*Center(
                       child: Image.asset(
                         'assets/logo.jpg',
                         height: 200,
                         width: 200,
                       ),
-                    ),
-                    const SizedBox(height: 20.0),
+                    ),*/
+                     const SizedBox(height: 10.0), // Reduced gap
+                    Center(
+              child: Lottie.asset(
+                'assets/login_animation.json', // Path to your Lottie animation asset
+                height: 400, // Adjust the height as needed
+                width: 400,  // Adjust the width as needed
+              ),
+            ),
+                    const SizedBox(height: 5.0),
                     const Center(
                       child: Text(
                         'Welcome Back!',
