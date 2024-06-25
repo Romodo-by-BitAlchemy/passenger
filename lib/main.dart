@@ -1,73 +1,143 @@
 import 'package:flutter/material.dart';
-import 'components/bottom_nav_bar.dart';
-import 'pages/book_trip.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:pays/services/network_service.dart';
+import 'package:pays/respository/paymentProceedRespo.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set your Stripe publishable key directly here.
+  Stripe.publishableKey = 'pk_test_51PTNoXIVbvSD3OkZpPI5FrZYI1ovYhjXkiRWg0SGE1x8s0Y5TO6WGwe8ZgDoDyaYsw1FDW1hc72NwvwchxsSOcya00hTFNaKhr';
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Romodo',
+      title: 'Stripe Payment Example',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 59, 17, 226)),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Romodo'),
+      home: PaymentPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class PaymentPage extends StatelessWidget {
+  // Controllers for the text fields.
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController destinationController = TextEditingController();
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 1; // Start with the Romodo tab selected
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  // Define your pages here. These could be actual pages or just placeholders.
-  final List<Widget> _pages = [
-    const Center(child: Text('Menu Page')),
-    const Center(child: Text('Home Page')),
-    const Center(
-      child: BookTripPage(),
-    ),
-    const Center(child: Text('Account Page')),
-  ];
+  // Instance of NetworkService
+  final NetworkService networkService = NetworkService(baseUrl: 'https://your-backend-url.com');  // Replace with your backend URL
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('Stripe Payment Example'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: _pages.elementAt(_selectedIndex),
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Enter your name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: destinationController,
+              decoration: InputDecoration(
+                labelText: 'Enter your destination',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 40),  // Add some spacing before the button
+            ElevatedButton(
+              onPressed: () async {
+                // Retrieve the input values
+                String name = nameController.text;
+                String destination = destinationController.text;
+
+                // Input validation
+                if (name.isEmpty || destination.isEmpty) {
+                  // Show an error message if any field is empty
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Validation Error'),
+                        content: Text('Please enter both your name and destination.'),
+                        actions: [
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  return;
+                }
+
+                // Print the inputs to the console (for debugging)
+                print('Name: $name');
+                print('Destination: $destination');
+
+                // Send the data to the backend
+                await networkService.sendData(name, destination);
+
+                // Call the payment handling method.
+                final paymentHandler = StripePaymentHandle();
+                await paymentHandler.stripeMakePayment(context);
+
+                // Clear the text fields after a successful payment (optional)
+                nameController.clear();
+                destinationController.clear();
+              },
+              child: Text('Make Payment'),
+            ),
+          ],
         ),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemSelected: _onItemTapped,
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
